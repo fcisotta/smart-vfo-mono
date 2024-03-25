@@ -75,6 +75,8 @@ void ee_load_vfo_rec(byte vfo, byte band) {
   EEPROM.get(MEM_VFO_ADDR+vfo*VFO_BANK_SIZE+band*OP_RECORD_SIZE, op_rec.rx);
   EEPROM.get(MEM_VFO_ADDR+vfo*VFO_BANK_SIZE+band*OP_RECORD_SIZE+4, op_rec.mode);
   EEPROM.get(MEM_VFO_ADDR+vfo*VFO_BANK_SIZE+band*OP_RECORD_SIZE+5, op_rec.rit);
+  if (op_rec.rx < __band_llimit || op_rec.rx > __band_ulimit)
+    op_rec.rx = __band_llimit;
 }
 
 op_record ee_find_vfo_rec(byte vfo, byte band) {
@@ -186,6 +188,12 @@ void ee_store_dds_pwr()
   EEPROM.update(MEM_CAL_PARAMS_ADDR+16, __dds_pwr2);
 }
 
+void ee_store_band_limits()
+{
+  eeprom_uint32update(MEM_CAL_PARAMS_ADDR+17, __band_llimit);
+  eeprom_uint32update(MEM_CAL_PARAMS_ADDR+21, __band_ulimit);
+}
+
 
 /**************************************/
 /* Boot time current params load      */
@@ -212,6 +220,8 @@ void ee_boot_load()
   EEPROM.get(MEM_CAL_PARAMS_ADDR+10, __dds_cal);
   EEPROM.get(MEM_CAL_PARAMS_ADDR+14, __dds_pwr0);
   EEPROM.get(MEM_CAL_PARAMS_ADDR+16, __dds_pwr2);
+  EEPROM.get(MEM_CAL_PARAMS_ADDR+17, __band_llimit);
+  EEPROM.get(MEM_CAL_PARAMS_ADDR+21, __band_ulimit);
 
 }
 
@@ -231,11 +241,11 @@ void ee_init()
 
   // init scalar params
   cur_vfo = VFO_B;
-  cur_band[VFO_B] = 5;
+  cur_band[VFO_B] = 0;
   ee_store_cur_band();
 
   cur_vfo = VFO_A;
-  cur_band[VFO_A] = 5;
+  cur_band[VFO_A] = 0;
   ee_store_cur_band();
   ee_store_cur_vfo();
 
@@ -281,22 +291,14 @@ void ee_init()
   __dds_pwr2 = 3;
   ee_store_dds_pwr();
 
+  __band_llimit = 1399500000UL / SI5351_FREQ_MULT;
+  __band_ulimit = 1450000000UL / SI5351_FREQ_MULT;
+  ee_store_band_limits();
 
   // operations data
   op_record vfos[BANDS_NO] = {
     // VFO A
-    { 184000000UL / SI5351_FREQ_MULT, MODE_LSB, 0},
-    { 365000000UL / SI5351_FREQ_MULT, MODE_LSB, 0},
-    { 536000000UL / SI5351_FREQ_MULT, MODE_LSB, 0},
-    { 710000000UL / SI5351_FREQ_MULT, MODE_LSB, 0},
-    {1013000000UL / SI5351_FREQ_MULT, MODE_USB, 0},
-    {1420000000UL / SI5351_FREQ_MULT, MODE_USB, 0},
-    {1812000000UL / SI5351_FREQ_MULT, MODE_USB, 0},
-    {2120000000UL / SI5351_FREQ_MULT, MODE_USB, 0},
-    {2494000000UL / SI5351_FREQ_MULT, MODE_USB, 0},
-    {2895000000UL / SI5351_FREQ_MULT, MODE_USB, 0},
-    {5010000000UL / SI5351_FREQ_MULT, MODE_USB, 0},
-    {14450000000UL / SI5351_FREQ_MULT, MODE_USB, 0}
+    { __band_llimit, __band_llimit < 10000000UL ? (byte)MODE_LSB : (byte)MODE_USB, 0}
   };
 
   for (byte i = 0; i < 2; i++)

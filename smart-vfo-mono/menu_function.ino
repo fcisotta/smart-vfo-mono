@@ -50,7 +50,7 @@ void menu_init() {
 
   if (state == STATE_CAL_MENU) {
 
-    #define CAL_MENU_ITEMS_NO  8
+    #define CAL_MENU_ITEMS_NO  10
     menu_items_no = CAL_MENU_ITEMS_NO;
     menu_items_valid = (byte *) malloc(menu_items_no);
     menu_labels = (char **)malloc(menu_items_no * sizeof(char *));
@@ -78,6 +78,12 @@ void menu_init() {
     
     menu_labels[7] = (char *) malloc(9);
     strcpy_P(menu_labels[7], PSTR("CLK2 pwr"));
+
+    menu_labels[8] = (char *) malloc(12);
+    strcpy_P(menu_labels[8], PSTR("Lower limit"));
+    
+    menu_labels[9] = (char *) malloc(12);
+    strcpy_P(menu_labels[9], PSTR("Upper limit"));
 
   }
   else if (state == STATE_OP_MENU) {
@@ -262,6 +268,20 @@ void enter_menu_item() {
           menu_curvalue = __dds_pwr2;
         }
         break;
+      case 8:
+        menu_value_type = MENUITEM_TYPE_FREQ;
+        menu_value_min = 10; // must be power of 10
+        menu_value_max = __band_ulimit;
+        menu_value = __band_llimit;
+        menu_step = 100;
+        break;
+      case 9:
+        menu_value_type = MENUITEM_TYPE_FREQ;
+        menu_value_min = __band_llimit; // must be power of 10
+        menu_value_max = 220000000UL;
+        menu_value = __band_ulimit;
+        menu_step = 100;
+        break;
     }
   }
 
@@ -342,6 +362,14 @@ void process_menu_item() {
     else if (menu_curitem == 7) {
       __dds_pwr2 = menu_curvalue;
       ee_store_dds_pwr();
+    }
+    else if (menu_curitem == 8) {
+      __band_llimit = menu_value;
+      ee_store_band_limits();
+    }
+    else if (menu_curitem == 9) {
+      __band_ulimit = menu_value;
+      ee_store_band_limits();
     }
   }
 

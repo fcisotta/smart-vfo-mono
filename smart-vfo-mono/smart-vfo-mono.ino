@@ -28,7 +28,7 @@
 // leave uncommented until Si5351 is connected to Arduino
 //#define MOCK_Si5351
 
-#define FW_VERSION           PSTR("v0.13 Dec 2023")
+#define FW_VERSION           PSTR("v0.1 Mar 2024")
 
 // Pinout configuration
 
@@ -163,6 +163,8 @@ uint16_t __ssb_offset, __cw_offset;
 int32_t __dds_cal;
 int8_t __dds_pwr0;
 int8_t __dds_pwr2;
+uint32_t __band_llimit;
+uint32_t __band_ulimit;
 int32_t __tuning_dds_cal;
 
 #define DESIGN_SINGLE_CONV   0
@@ -272,7 +274,7 @@ typedef struct {
               } ch_record;
 #define CH_RECORD_SIZE    10
 
-#define BANDS_NO          12
+#define BANDS_NO           1
 //#define VFO_BANK_SIZE    121 // = BANDS_NO * OP_RECORD_SIZE
 #define VFO_BANK_SIZE     (BANDS_NO * OP_RECORD_SIZE)
 
@@ -293,27 +295,14 @@ typedef struct {
                  //char label[5];
                  uint32_t lower_lim, upper_lim;
                } band;
-band bands[] = {
-  { /*"160m",*/  180000000UL / SI5351_FREQ_MULT,  186000000UL / SI5351_FREQ_MULT},
-  { /*"80m", */  350000000UL / SI5351_FREQ_MULT,  380000000UL / SI5351_FREQ_MULT},
-  { /*"60m", */  530000000UL / SI5351_FREQ_MULT,  538000000UL / SI5351_FREQ_MULT},
-  { /*"40m", */  699500000UL / SI5351_FREQ_MULT,  725000000UL / SI5351_FREQ_MULT},
-  { /*"30m", */ 1010000000UL / SI5351_FREQ_MULT, 1015000000UL / SI5351_FREQ_MULT},
-  { /*"20m", */ 1399500000UL / SI5351_FREQ_MULT, 1450000000UL / SI5351_FREQ_MULT},
-  { /*"17m", */ 1805000000UL / SI5351_FREQ_MULT, 1820000000UL / SI5351_FREQ_MULT},
-  { /*"15m", */ 2099500000UL / SI5351_FREQ_MULT, 2150000000UL / SI5351_FREQ_MULT},
-  { /*"12m", */ 2485000000UL / SI5351_FREQ_MULT, 2500000000UL / SI5351_FREQ_MULT},
-  { /*"10m", */ 2800000000UL / SI5351_FREQ_MULT, 3000000000UL / SI5351_FREQ_MULT},
-  { /*" 6m", */ 5000000000UL / SI5351_FREQ_MULT, 5200000000UL / SI5351_FREQ_MULT},
-  { /*" 2m", */ 14400000000UL / SI5351_FREQ_MULT, 14600000000UL / SI5351_FREQ_MULT}
-};
+band bands[1];
 
 
 // operating param cache
 int32_t _o_rit[BANDS_NO][2] = {0};
 
 /****** eeprom management ******/
-#define EEPROM_DATAMODEL_VERSION   10  // always greater than 0, to stay apart from blank eeprom
+#define EEPROM_DATAMODEL_VERSION  100  // always greater than 0, to stay apart from blank eeprom
 
 #define MEM_BOOT_ADDR          0
 #define MEM_PARAMS_ADDR       10
@@ -442,6 +431,8 @@ void setup()
     ee_check();
     ee_boot_load();
   }
+  bands[0].lower_lim = __band_llimit;
+  bands[0].upper_lim = __band_ulimit;
 
   ee_load_vfo_rec(cur_vfo, cur_band[cur_vfo]);
   if (state == STATE_VFO_DIAL && op_rec.rit != 0) {
