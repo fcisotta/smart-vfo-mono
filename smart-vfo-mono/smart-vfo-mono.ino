@@ -28,7 +28,7 @@
 // leave uncommented until Si5351 is connected to Arduino
 //#define MOCK_Si5351
 
-#define FW_VERSION           PSTR("v0.1 Mar 2024")
+#define FW_VERSION           PSTR("v0.2 Mar 2024")
 
 // Pinout configuration
 

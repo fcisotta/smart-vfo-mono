@@ -56,18 +56,18 @@ void display_cache_reset() {
 /**************************************/
 void display_vfo_mem() {
   if (state == STATE_VFO_DIAL && substate != SUBSTATE_PICKMEM) {
-    display_blanks(0, 1, 5);
+    display_blanks(0, 1, 4);
     display_cur_vfo();
   }
   else if (state == STATE_VFO_DIAL && substate == SUBSTATE_PICKMEM) {
     lcd.setCursor(1, 0);
     lcd.write((uint8_t)RGT_ARR_SYMBOL);
-    lcd.print("m");
     display_upd_cur_mem_pick();
   }
   else if (state == STATE_MEM_DIAL) {
     lcd.setCursor(0, 0);
-    lcd.print(PSTR("  m"));
+    //lcd.print(PSTR(" m"));
+    lcd.print(" m");
     display_upd_cur_mem();
   }
 }
@@ -85,14 +85,14 @@ void display_cur_vfo() {
 }
 
 void display_upd_cur_mem() {
-  lcd.setCursor(3, 0);
+  lcd.setCursor(2, 0);
   if (cur_mem+1 < 10)
     lcd.print('0');
   lcd.print(cur_mem+1);
 }
 
 void display_upd_cur_mem_pick() {
-  lcd.setCursor(3, 0);
+  lcd.setCursor(2, 0);
   if (cur_mem_pick+1 < 10)
     lcd.print('0');
   lcd.print(cur_mem_pick+1);
@@ -104,7 +104,7 @@ void display_upd_cur_mem_pick() {
 /* Displays the frequency             */
 /**************************************/
 void display_freq(uint32_t f) {  
-  _display_freq(0, 6, f);
+  _display_freq(0, 5, f);
 }
 
 void _display_freq(byte row, byte col, uint32_t freq) {
@@ -112,11 +112,9 @@ void _display_freq(byte row, byte col, uint32_t freq) {
   byte bl = false;
   // display main frequency, passed in vfo argument
   lcd.setCursor(col, row);
-  if (f >= 140 && f < 150) {
-    lcd.write((uint8_t)DDIGIT_SYMBOL);
-    f -= 140;
-  }
-  else if (f < 10)
+  if (f < 100)
+    lcd.print(blank);
+  if (f < 10)
     lcd.print(blank);
   if (f < 1) {
     lcd.print(doubleblank);
@@ -209,9 +207,9 @@ void display_clear_dge_prompt() {
 /* Channel digits entry               */
 /**************************************/
 void display_init_ch_dge() {
-  lcd.setCursor(3, 0);
+  lcd.setCursor(2, 0);
   lcd.print(doubleblank);
-  lcd.setCursor(3, 0);
+  lcd.setCursor(2, 0);
 }
 
 void display_process_ch_dge_digit(byte digit) {
@@ -228,9 +226,9 @@ void display_step() {
   else if (state == STATE_VFO_DIAL && substate == SUBSTATE_RIT_OP)
     _display_step(1, 15, rit_step);
   else if ((state == STATE_VFO_DIAL && substate == SUBSTATE_PICKMEM) || state == STATE_MEM_DIAL)
-    _display_step(0, 4, 1);
+    _display_step(0, 3, 1);
   else if (state == STATE_CAL_MENU || state == STATE_OP_MENU)
-    _display_step(1, 9, menu_step);
+    _display_step(1, 10, menu_step);
 }
 
 void _display_step(byte row, byte col, uint32_t step) {

@@ -192,6 +192,10 @@ void ee_store_band_limits()
 {
   eeprom_uint32update(MEM_CAL_PARAMS_ADDR+17, __band_llimit);
   eeprom_uint32update(MEM_CAL_PARAMS_ADDR+21, __band_ulimit);
+
+  // init memory channels
+  for (byte i = 0; i < CH_NO; i++)
+    ee_unset_ch(i);
 }
 
 
