@@ -28,7 +28,7 @@
 // leave uncommented until Si5351 is connected to Arduino
 //#define MOCK_Si5351
 
-#define FW_VERSION           PSTR("v0.2 Mar 2024")
+#define FW_VERSION           PSTR("v0.3 Apr 2024")
 
 // Pinout configuration
 
@@ -250,6 +250,8 @@ btn_grid btns[] = {
 #define BAND_DN_BTN       2
 #define MODE_BTN          3
 #define OP_BTN            4
+#define DIGIT1_BTN        5
+#define DIGIT9_BTN       15
 #define VFO_AB_BTN        8
 #define VFO_MV_BTN       12
 #define MR_MIN_BTN       16
@@ -299,7 +301,7 @@ band bands[1];
 
 
 // operating param cache
-int32_t _o_rit[BANDS_NO][2] = {0};
+int32_t _o_rit[2][BANDS_NO] = { };
 
 /****** eeprom management ******/
 #define EEPROM_DATAMODEL_VERSION  100  // always greater than 0, to stay apart from blank eeprom
@@ -421,9 +423,9 @@ void setup()
 
 
   // launch memory factory reset
-  if (get_mombutton(BAND_DN_BTN) == 0) {
-    btns[BAND_DN_BTN].state = 0; // set button state so that it's not detected as released at next loop cycle
-    btns[BAND_DN_BTN].downTs = -BTN_LONG_PRESS;
+  if (get_mombutton(DIGIT9_BTN) == 0) {
+    btns[DIGIT9_BTN].state = 0; // set button state so that it's not detected as released at next loop cycle
+    btns[DIGIT9_BTN].downTs = -BTN_LONG_PRESS;
     ee_init();
   }
   // init from memory
@@ -452,9 +454,9 @@ void setup()
   set_pwr(); // set current DDS power to relevant clocks
 
   // launch calibration menu
-  if (get_mombutton(BAND_UP_BTN) == 0) {
-    btns[BAND_UP_BTN].state = 0; // set button state so that it's not detected as released at next loop cycle
-    btns[BAND_UP_BTN].downTs = -BTN_LONG_PRESS;
+  if (get_mombutton(DIGIT1_BTN) == 0) {
+    btns[DIGIT1_BTN].state = 0; // set button state so that it's not detected as released at next loop cycle
+    btns[DIGIT1_BTN].downTs = -BTN_LONG_PRESS;
     toggle_menu(MENU_CAL);
   }
   else {  

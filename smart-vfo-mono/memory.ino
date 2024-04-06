@@ -196,6 +196,12 @@ void ee_store_band_limits()
   // init memory channels
   for (byte i = 0; i < CH_NO; i++)
     ee_unset_ch(i);
+
+  // reset operating state at next start
+  byte cur_state = state;
+  state = STATE_VFO_DIAL;
+  ee_store_state();
+  state = cur_state;
 }
 
 
@@ -295,8 +301,8 @@ void ee_init()
   __dds_pwr2 = 3;
   ee_store_dds_pwr();
 
-  __band_llimit = 1399500000UL / SI5351_FREQ_MULT;
-  __band_ulimit = 1450000000UL / SI5351_FREQ_MULT;
+  __band_llimit = 14400000000UL / SI5351_FREQ_MULT;
+  __band_ulimit = 14600000000UL / SI5351_FREQ_MULT;
   ee_store_band_limits();
 
   // operations data

@@ -112,5 +112,16 @@ byte get_pulsebutton(byte btn) {
 /* Read momentary button              */
 /**************************************/
 byte get_mombutton(byte btn) {
-  return digitalRead(btns[btn].pin);
+  byte result;
+
+  if (btns[btn].pin != KEYPAD_PLACEHOLDER_PIN) {
+    result = digitalRead(btns[btn].pin);
+  }
+  else {
+    // query keypad
+    digitalWrite(btns[btn].keypad_pos[1], 0);
+    result = digitalRead(btns[btn].keypad_pos[0]);   
+    digitalWrite(btns[btn].keypad_pos[1], 1);
+  }
+  return result;
 }
