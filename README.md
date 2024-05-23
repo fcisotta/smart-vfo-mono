@@ -1,7 +1,25 @@
-This is an evolution of the [Smart-VFO](https://github.com/fcisotta/smart-vfo) project, to support a single band RTX.
-Some features are simplified and specialized for the requirements of a one-band-only VFO (band definition being set at runtime in the calibration menu, fewer buttons required, etc.).
+This is an **evolution of the [Smart-VFO](https://github.com/fcisotta/smart-vfo) project**, specialized for **single-band RTX operations**.
 
-Further documentation will follow...
+While one band only is supported, this allowed featuring complete band configuration at runtime (band limits, along with conversion design, power levels, etc. may be set in the calibration menu, with the front-end controls). Thus, no coding is required to set up firmware for the RTX project.
+
+All standard features of the Smart-VFO are maintained in this version, including the A/B VFO duality and memory channels amount.
+
+`BAND_UP` and `BAND_DN` buttons are spared, since they become useless in this application, while their role at boot time (opening calibration menu and triggering factory reset) have been reassigned to keypad buttons `1` and `9`, respectively.
+
+Please refer to the multi-band [Smart-VFO](https://github.com/fcisotta/smart-vfo) project for any further detail.
+
+
+
+<br/>
+
+# User Interface controls
+
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ![UI panel](res/UI/UI-panel.png)
+
+Blue-labeled button functions may be activated by a long press (> 1 s).
+
+Red-labeled button functions are enforced at boot time.
+
 
 <br/>
 
