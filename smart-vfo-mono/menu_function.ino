@@ -50,7 +50,7 @@ void menu_init() {
 
   if (state == STATE_CAL_MENU) {
 
-    #define CAL_MENU_ITEMS_NO  10
+    #define CAL_MENU_ITEMS_NO  11
     menu_items_no = CAL_MENU_ITEMS_NO;
     menu_items_valid = (byte *) malloc(menu_items_no);
     menu_labels = (char **)malloc(menu_items_no * sizeof(char *));
@@ -84,6 +84,9 @@ void menu_init() {
     
     menu_labels[9] = (char *) malloc(12);
     strcpy_P(menu_labels[9], PSTR("Upper limit"));
+
+    menu_labels[10] = (char *) malloc(14);
+    strcpy_P(menu_labels[10], PSTR("Encoder scale"));
 
   }
   else if (state == STATE_OP_MENU) {
@@ -180,17 +183,17 @@ void rotate_menu(unsigned char direction) {
 }
 
 void menu_sel_init() {
-  if (state == STATE_CAL_MENU && menu_curitem == 4)
+  if (state == STATE_CAL_MENU && menu_curitem == 5)
     init_cal_freq();
 }
 
 void menu_sel_feedback() {
-  if (state == STATE_CAL_MENU && menu_curitem == 4)
+  if (state == STATE_CAL_MENU && menu_curitem == 5)
     adj_cal_freq(menu_value);
 }
 
 void menu_sel_end() {
-  if (state == STATE_CAL_MENU && menu_curitem == 4)
+  if (state == STATE_CAL_MENU && menu_curitem == 5)
     stop_cal_freq();
 }
 
@@ -245,7 +248,7 @@ void enter_menu_item() {
         break;
       case 5:
         menu_value_type = MENUITEM_TYPE_INT32;
-        menu_value_min = MAX_DDS_CAL_VALUE * -1; // must be power of 10
+        menu_value_min = MAX_DDS_CAL_VALUE * -1;
         menu_value_max = MAX_DDS_CAL_VALUE;
         menu_value = __dds_cal;
         menu_step = 10;
@@ -281,6 +284,13 @@ void enter_menu_item() {
         menu_value_max = 220000000UL;
         menu_value = __band_ulimit;
         menu_step = 100;
+        break;
+      case 10:
+        menu_value_type = MENUITEM_TYPE_INT32;
+        menu_value_min = 1;
+        menu_value_max = MAX_ENCODER_SCALE_VALUE;
+        menu_value = __enc_scale;
+        menu_step = 1;
         break;
     }
   }
@@ -370,6 +380,10 @@ void process_menu_item() {
     else if (menu_curitem == 9) {
       __band_ulimit = menu_value;
       ee_store_band_limits();
+    }
+    else if (menu_curitem == 10) {
+      __enc_scale = menu_value;
+      ee_store_enc_scale();
     }
   }
 

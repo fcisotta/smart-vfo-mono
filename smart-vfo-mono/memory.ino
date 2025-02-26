@@ -204,6 +204,11 @@ void ee_store_band_limits()
   state = cur_state;
 }
 
+void ee_store_enc_scale()
+{
+  eeprom_uint32update(MEM_CAL_PARAMS_ADDR+25, __enc_scale);
+}
+
 
 /**************************************/
 /* Boot time current params load      */
@@ -232,7 +237,7 @@ void ee_boot_load()
   EEPROM.get(MEM_CAL_PARAMS_ADDR+16, __dds_pwr2);
   EEPROM.get(MEM_CAL_PARAMS_ADDR+17, __band_llimit);
   EEPROM.get(MEM_CAL_PARAMS_ADDR+21, __band_ulimit);
-
+  EEPROM.get(MEM_CAL_PARAMS_ADDR+25, __enc_scale);
 }
 
 
@@ -300,6 +305,9 @@ void ee_init()
   __dds_pwr0 = 3;
   __dds_pwr2 = 3;
   ee_store_dds_pwr();
+
+  __enc_scale = 1;
+  ee_store_enc_scale();
 
   __band_llimit = 14400000000UL / SI5351_FREQ_MULT;
   __band_ulimit = 14600000000UL / SI5351_FREQ_MULT;
